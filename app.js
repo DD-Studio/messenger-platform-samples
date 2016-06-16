@@ -491,12 +491,41 @@ function sendReceiptMessage(recipientId) {
        console.log('error:', err);
      else {
        console.log(JSON.stringify(response, null, 2));
+       var emotionData = response["docEmotions"];
+
        var messageData = {
          recipient: {
            id: recipientId
          },
          message: {
-           text: JSON.stringify(response, null, 2)
+           attachment: {
+             type: "template",
+             payload: {
+               template_type: "button",
+               text: "Emotion in your words",
+               buttons:[{
+                 type: "web_url",
+                 url: "https://www.oculus.com/en-us/rift/",
+                 title: "Anger: " + emotionData["anger"]
+               }, {
+                 type: "web_url",
+                 url: "https://www.oculus.com/en-us/rift/",
+                 title: "Disgust: " + emotionData["disgust"]
+               }, {
+                 type: "web_url",
+                 url: "https://www.oculus.com/en-us/rift/",
+                 title: "Fear: " + emotionData["fear"]
+               }, {
+                 type: "web_url",
+                 url: "https://www.oculus.com/en-us/rift/",
+                 title: "Joy: " + emotionData["joy"]
+               }, {
+                 type: "web_url",
+                 url: "https://www.oculus.com/en-us/rift/",
+                 title: "Sadness: " + emotionData["sadness"]
+               }]
+             }
+           }
          }
        };
 
