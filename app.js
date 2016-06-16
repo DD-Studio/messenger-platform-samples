@@ -17,7 +17,8 @@ const
   express = require('express'),
   https = require('https'),
   request = require('request'),
-  watson = require('watson-developer-cloud');
+  watson = require('watson-developer-cloud'),
+  quiche = require('quiche');
 
 var app = express();
 
@@ -499,31 +500,9 @@ function sendReceiptMessage(recipientId) {
          },
          message: {
            attachment: {
-             type: "template",
+             type: "image",
              payload: {
-               template_type: "button",
-               text: "Emotion in your words",
-               buttons:[{
-                 type: "web_url",
-                 url: "https://www.oculus.com/en-us/rift/",
-                 title: "Anger: " + emotionData["anger"]
-               }, {
-                 type: "web_url",
-                 url: "https://www.oculus.com/en-us/rift/",
-                 title: "Disgust: " + emotionData["disgust"]
-               }, {
-                 type: "web_url",
-                 url: "https://www.oculus.com/en-us/rift/",
-                 title: "Fear: " + emotionData["fear"]
-               }, {
-                 type: "web_url",
-                 url: "https://www.oculus.com/en-us/rift/",
-                 title: "Joy: " + emotionData["joy"]
-               }, {
-                 type: "web_url",
-                 url: "https://www.oculus.com/en-us/rift/",
-                 title: "Sadness: " + emotionData["sadness"]
-               }]
+               url: createBarChartUrl(emotionData)
              }
            }
          }
@@ -559,6 +538,29 @@ function callSendAPI(messageData) {
       console.error(error);
     }
   });
+}
+
+function createBarChartUrl(emotionData) {
+  var bar = new quiche('bar');
+  bar.setWidth(400);
+  bar.setHeight(265);
+  bar.setTitle('TextEmotionFactors');
+  bar.setBarStacked(); // Stacked chart
+  bar.setBarWidth(0);
+  bar.setBarSpacing(6); // 6 pixles between bars/groups
+  bar.setLegendBottom(); // Put legend at bottom
+  bar.setTransparentBackground(); // Make background transparent
+
+  bar.addData([emotionData["anger"], 0, 0, 0, 0], 'Anger', 'FF0000');
+  bar.addData([0, emotionData["disgust"], 0, 0, 0], 'Disgust', '00FF00');
+  bar.addData([0, 0, emotionData["fear"], 0, 0], 'Fear', '00FFFF');
+  bar.addData([0, 0, 0, emotionData["joy"], 0], 'Joy', 'FFFF00');
+  bar.addData([0, 0, 0, 0, emotionData["sadness"]], 'Sadness', '0000FF');
+
+  bar.setAutoScaling(); // Auto scale y axis
+  bar.addAxisLabels('x', ['Anger', 'Disgust', 'Fear', 'Joy', 'Sadness']);
+
+  return bar.getUrl(true); // First param controls http vs. https
 }
 
 // Start server
