@@ -558,7 +558,13 @@ function createBarChartUrl(emotionData) {
   bar.addData([0, 0, 0, 0, emotionData["sadness"]], 'Sadness', '0000FF');
 
   bar.setAutoScaling(); // Auto scale y axis
-  bar.addAxisLabels('x', ['Anger', 'Disgust', 'Fear', 'Joy', 'Sadness']);
+  bar.addAxisLabels('x', [
+    'Anger' + emotionData["anger"].toFixed(2),
+    'Disgust' + emotionData["disgust"].toFixed(2),
+    'Fear' + emotionData["fear"].toFixed(2),
+    'Joy' + emotionData["joy"].toFixed(2),
+    'Sadness' + emotionData["sadness"].toFixed(2)
+  ]);
 
   return bar.getUrl(true); // First param controls http vs. https
 }
